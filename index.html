@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piket Guru Digital — Dashboard Sekolah</title>
+  <meta name="description" content="Aplikasi Piket Guru Digital untuk mencatat keterlambatan, izin, ketidakhadiran, dan kejadian sekolah." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🏫</div>
+        <div class="brand-text">
+          <h2>Piket Digital</h2>
+          <span>SMA Negeri 1</span>
+        </div>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Tutup menu">✕</button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <p class="nav-label">MENU UTAMA</p>
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-ico">📊</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="data">
+          <span class="nav-ico">🗂️</span><span>Data Piket</span>
+        </button>
+        <button class="nav-item" data-page="terlambat">
+          <span class="nav-ico">🕐</span><span>Siswa Terlambat</span>
+        </button>
+        <button class="nav-item" data-page="izin">
+          <span class="nav-ico">📝</span><span>Siswa Izin</span>
+        </button>
+        <button class="nav-item" data-page="tidakhadir">
+          <span class="nav-ico">🚫</span><span>Ketidakhadiran</span>
+        </button>
+        <button class="nav-item" data-page="kejadian">
+          <span class="nav-ico">📋</span><span>Catatan Kejadian</span>
+        </button>
+        <p class="nav-label">LAINNYA</p>
+        <button class="nav-item" data-page="rekap">
+          <span class="nav-ico">📈</span><span>Rekap</span>
+        </button>
+        <button class="nav-item" data-page="pengaturan">
+          <span class="nav-ico">⚙️</span><span>Pengaturan</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="guru-card">
+          <div class="avatar">👩‍🏫</div>
+          <div class="guru-info">
+            <strong id="sidebarGuruName">Guru Piket</strong>
+            <span>Administrator</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="hamburger" id="hamburger" aria-label="Buka menu">☰</button>
+          <div>
+            <h1 id="greeting">Selamat pagi, Guru 👋</h1>
+            <p class="subtitle">Kelola aktivitas piket hari ini dengan mudah.</p>
+            <p class="date-line" id="currentDate">Kamis, 8 Oktober 2026</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="search-box">
+            <span class="search-ico">🔍</span>
+            <input type="text" id="globalSearch" placeholder="Cari nama, NIS, kelas..." autocomplete="off" />
+          </div>
+          <button class="icon-btn" id="themeToggle" title="Ubah mode" aria-label="Dark mode">🌙</button>
+          <button class="icon-btn notif-btn" id="notifBtn" aria-label="Notifikasi">
+            🔔<span class="notif-dot" id="notifDot"></span>
+          </button>
+          <div class="header-avatar" title="Guru Piket">👩‍🏫</div>
+        </div>
+        <!-- dropdown notifikasi -->
+        <div class="notif-dropdown" id="notifDropdown">
+          <h4>Notifikasi</h4>
+          <div id="notifList"></div>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- ===== PAGE: DASHBOARD ===== -->
+        <section class="page active" id="page-dashboard">
+          <!-- Statistik -->
+          <div class="section-head">
+            <h2>Ringkasan Hari Ini</h2>
+            <span class="pill" id="todayLabel">Hari ini</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card blue">
+              <div class="stat-top"><span class="stat-ico">🗂️</span><span class="stat-ind">Total</span></div>
+              <div class="stat-num" id="statTotal">0</div>
+              <div class="stat-label">Total Piket</div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-top"><span class="stat-ico">🕐</span><span class="stat-ind">Hari ini</span></div>
+              <div class="stat-num" id="statTerlambat">0</div>
+              <div class="stat-label">Terlambat</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-top"><span class="stat-ico">📝</span><span class="stat-ind">Hari ini</span></div>
+              <div class="stat-num" id="statIzin">0</div>
+              <div class="stat-label">Izin</div>
+            </div>
+            <div class="stat-card red">
+              <div class="stat-top"><span class="stat-ico">🚫</span><span class="stat-ind">Hari ini</span></div>
+              <div class="stat-num" id="statTidakHadir">0</div>
+              <div class="stat-label">Tidak Hadir</div>
+            </div>
+          </div>
+
+          <!-- Quick action -->
+          <div class="section-head">
+            <h2>Aksi Cepat</h2>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-card" data-action="terlambat">
+              <span class="q-ico q-orange">🕐</span>
+              <strong>Catat Keterlambatan</strong>
+              <small>Siswa datang terlambat</small>
+            </button>
+            <button class="quick-card" data-action="izin">
+              <span class="q-ico q-green">📝</span>
+              <strong>Catat Izin</strong>
+              <small>Siswa meminta izin</small>
+            </button>
+            <button class="quick-card" data-action="tidakhadir">
+              <span class="q-ico q-red">🚫</span>
+              <strong>Catat Ketidakhadiran</strong>
+              <small>Sakit / Izin / Alpa</small>
+            </button>
+            <button class="quick-card" data-action="kejadian">
+              <span class="q-ico q-blue">📋</span>
+              <strong>Tambah Kejadian</strong>
+              <small>Kejadian di sekolah</small>
+            </button>
+          </div>
+
+          <div class="two-col">
+            <!-- Aktivitas terbaru -->
+            <div class="card">
+              <div class="card-head">
+                <h3>Aktivitas Terbaru</h3>
+                <button class="link-btn" data-goto="data">Lihat semua →</button>
+              </div>
+              <div class="timeline" id="activityTimeline"></div>
+            </div>
+            <!-- Statistik kelas -->
+            <div class="card">
+              <div class="card-head">
+                <h3>Aktivitas Berdasarkan Kelas</h3>
+              </div>
+              <div id="classStats"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PAGE: DATA PIKET ===== -->
+        <section class="page" id="page-data">
+          <div class="section-head">
+            <h2>Data Aktivitas Piket</h2>
+            <button class="btn btn-primary" id="btnTambahUmum">+ Tambah Data</button>
+          </div>
+
+          <div class="card">
+            <div class="filter-bar">
+              <div class="chip-group" id="jenisChips">
+                <button class="chip active" data-jenis="semua">Semua</button>
+                <button class="chip" data-jenis="terlambat">Terlambat</button>
+                <button class="chip" data-jenis="izin">Izin</button>
+                <button class="chip" data-jenis="tidak_hadir">Tidak Hadir</button>
+                <button class="chip" data-jenis="kejadian">Kejadian</button>
+              </div>
+              <div class="filter-row">
+                <input type="date" id="filterTanggal" class="input" title="Filter tanggal" />
+                <select id="filterKelas" class="input">
+                  <option value="">Semua Kelas</option>
+                </select>
+                <select id="filterStatus" class="input">
+                  <option value="">Semua Status</option>
+                  <option>Tercatat</option>
+                  <option>Sakit</option>
+                  <option>Izin</option>
+                  <option>Alpa</option>
+                  <option>Ditangani</option>
+                  <option>Dalam proses</option>
+                  <option>Selesai</option>
+                </select>
+                <button class="btn btn-ghost" id="btnResetFilter">Reset</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="table" id="dataTable">
+                <thead>
+                  <tr>
+                    <th>No</th><th>Tanggal</th><th>Nama Siswa</th><th>Kelas</th>
+                    <th>Jenis</th><th>Keterangan</th><th>Waktu</th><th>Status</th><th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="dataTableBody"></tbody>
+              </table>
+            </div>
+            <div class="mobile-list" id="dataMobileList"></div>
+            <div class="empty-state" id="dataEmpty" hidden>
+              <div class="empty-ico">📭</div>
+              <h3>Belum ada aktivitas</h3>
+              <p>Data aktivitas piket akan muncul di sini.</p>
+              <button class="btn btn-primary" data-action="terlambat">+ Tambah Data</button>
+            </div>
+            <div class="notfound" id="dataNotFound" hidden>
+              <h3>Data tidak ditemukan</h3>
+              <p>Coba kata kunci atau filter lain.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PAGE: TERLAMBAT ===== -->
+        <section class="page" id="page-terlambat">
+          <div class="section-head">
+            <h2>Siswa Terlambat</h2>
+            <button class="btn btn-primary" data-action="terlambat">+ Catat Keterlambatan</button>
+          </div>
+          <div class="card"><div class="table-wrap"><table class="table">
+            <thead><tr><th>No</th><th>Tanggal</th><th>Nama</th><th>NIS</th><th>Kelas</th><th>Jam Datang</th><th>Alasan</th><th>Aksi</th></tr></thead>
+            <tbody id="terlambatBody"></tbody>
+          </table></div><div class="mobile-list" id="terlambatMobile"></div></div>
+        </section>
+
+        <!-- ===== PAGE: IZIN ===== -->
+        <section class="page" id="page-izin">
+          <div class="section-head">
+            <h2>Siswa Izin</h2>
+            <button class="btn btn-primary" data-action="izin">+ Catat Izin</button>
+          </div>
+          <div class="card"><div class="table-wrap"><table class="table">
+            <thead><tr><th>No</th><th>Tanggal</th><th>Nama</th><th>NIS</th><th>Kelas</th><th>Jenis Izin</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+            <tbody id="izinBody"></tbody>
+          </table></div><div class="mobile-list" id="izinMobile"></div></div>
+        </section>
+
+        <!-- ===== PAGE: TIDAK HADIR ===== -->
+        <section class="page" id="page-tidakhadir">
+          <div class="section-head">
+            <h2>Ketidakhadiran Siswa</h2>
+            <button class="btn btn-primary" data-action="tidakhadir">+ Catat Ketidakhadiran</button>
+          </div>
+          <div class="card"><div class="table-wrap"><table class="table">
+            <thead><tr><th>No</th><th>Tanggal</th><th>Nama</th><th>NIS</th><th>Kelas</th><th>Status</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+            <tbody id="tidakhadirBody"></tbody>
+          </table></div><div class="mobile-list" id="tidakhadirMobile"></div></div>
+        </section>
+
+        <!-- ===== PAGE: KEJADIAN ===== -->
+        <section class="page" id="page-kejadian">
+          <div class="section-head">
+            <h2>Catatan Kejadian</h2>
+            <button class="btn btn-primary" data-action="kejadian">+ Tambah Kejadian</button>
+          </div>
+          <div class="kejadian-grid" id="kejadianGrid"></div>
+          <div class="empty-state" id="kejadianEmpty" hidden>
+            <div class="empty-ico">📋</div>
+            <h3>Belum ada kejadian</h3>
+            <p>Catatan kejadian sekolah akan muncul di sini.</p>
+            <button class="btn btn-primary" data-action="kejadian">+ Tambah Kejadian</button>
+          </div>
+        </section>
+
+        <!-- ===== PAGE: REKAP ===== -->
+        <section class="page" id="page-rekap">
+          <div class="section-head">
+            <h2>Rekap Piket</h2>
+            <div class="chip-group" id="rekapChips">
+              <button class="chip active" data-range="today">Hari ini</button>
+              <button class="chip" data-range="week">Minggu ini</button>
+              <button class="chip" data-range="month">Bulan ini</button>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card orange"><div class="stat-top"><span class="stat-ico">🕐</span></div><div class="stat-num" id="rekapTerlambat">0</div><div class="stat-label">Total Keterlambatan</div></div>
+            <div class="stat-card green"><div class="stat-top"><span class="stat-ico">📝</span></div><div class="stat-num" id="rekapIzin">0</div><div class="stat-label">Total Izin</div></div>
+            <div class="stat-card red"><div class="stat-top"><span class="stat-ico">🚫</span></div><div class="stat-num" id="rekapTidakHadir">0</div><div class="stat-label">Total Tidak Hadir</div></div>
+            <div class="stat-card blue"><div class="stat-top"><span class="stat-ico">📋</span></div><div class="stat-num" id="rekapKejadian">0</div><div class="stat-label">Total Kejadian</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Visualisasi Aktivitas</h3><span class="pill" id="rekapLabel">Hari ini</span></div>
+            <div id="barChart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Ringkasan per Kelas</h3></div>
+            <div id="rekapKelas"></div>
+          </div>
+        </section>
+
+        <!-- ===== PAGE: PENGATURAN ===== -->
+        <section class="page" id="page-pengaturan">
+          <div class="section-head"><h2>Pengaturan</h2></div>
+          <div class="two-col">
+            <div class="card">
+              <h3>Profil Guru Piket</h3>
+              <p class="muted">Nama ini tampil di header dan sidebar.</p>
+              <label class="lbl">Nama Guru</label>
+              <input class="input" id="settingGuruName" placeholder="cth: Ibu Sari" />
+              <label class="lbl">Nama Sekolah</label>
+              <input class="input" id="settingSchoolName" placeholder="cth: SMA Negeri 1" />
+              <button class="btn btn-primary" id="btnSaveSettings" style="margin-top:12px">Simpan Pengaturan</button>
+            </div>
+            <div class="card">
+              <h3>Kelola Data</h3>
+              <p class="muted">Data tersimpan lokal di browser (localStorage).</p>
+              <div class="setting-row">
+                <button class="btn btn-ghost" id="btnExport">⬇ Export CSV</button>
+                <button class="btn btn-ghost" id="btnPrint">🖨 Cetak Rekap</button>
+              </div>
+              <div class="setting-row">
+                <button class="btn btn-ghost" id="btnSeed">↺ Muat Data Contoh</button>
+                <button class="btn btn-danger" id="btnClearAll">🗑 Hapus Semua Data</button>
+              </div>
+              <div class="theme-row">
+                <span>Mode Tampilan</span>
+                <button class="btn btn-ghost" id="btnThemeSetting">🌙 Dark Mode</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">Piket Guru Digital &bull; Dibuat untuk guru piket &bull; Data tersimpan otomatis di perangkat ini</footer>
+    </div>
+  </div>
+
+  <!-- ============ MODAL FORM ============ -->
+  <div class="modal-overlay" id="formModal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="formTitle">Catat Keterlambatan</h3>
+        <button class="icon-btn" data-close aria-label="Tutup">✕</button>
+      </div>
+      <form id="piketForm" novalidate>
+        <input type="hidden" id="fId" />
+        <input type="hidden" id="fJenis" value="terlambat" />
+
+        <!-- field umum siswa -->
+        <div id="fieldSiswa">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl" for="fNama">Nama siswa *</label>
+              <input class="input" id="fNama" placeholder="cth: Andi Saputra" />
+              <small class="err" id="eNama"></small>
+            </div>
+            <div class="form-group">
+              <label class="lbl" for="fNis">NIS *</label>
+              <input class="input" id="fNis" placeholder="cth: 12001" inputmode="numeric" />
+              <small class="err" id="eNis"></small>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl" for="fKelas">Kelas *</label>
+              <select class="input" id="fKelas"></select>
+              <small class="err" id="eKelas"></small>
+            </div>
+            <div class="form-group">
+              <label class="lbl" for="fTanggal">Tanggal *</label>
+              <input type="date" class="input" id="fTanggal" />
+              <small class="err" id="eTanggal"></small>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl" for="fWaktu">Jam / Waktu *</label>
+              <input type="time" class="input" id="fWaktu" />
+              <small class="err" id="eWaktu"></small>
+            </div>
+            <div class="form-group" id="wrapStatusSiswa">
+              <label class="lbl" for="fStatus">Status</label>
+              <select class="input" id="fStatus">
+                <option>Tercatat</option>
+              </select>
+            </div>
+          </div>
+          <!-- khusus terlambat -->
+          <div class="form-group" id="wrapAlasan">
+            <label class="lbl" for="fKeterangan">Alasan keterlambatan *</label>
+            <textarea class="input" id="fKeterangan" rows="3" placeholder="cth: Bangun kesiangan"></textarea>
+            <small class="err" id="eKeterangan"></small>
+          </div>
+          <!-- khusus izin -->
+          <div class="form-group" id="wrapJenisIzin" hidden>
+            <label class="lbl" for="fJenisIzin">Jenis izin *</label>
+            <select class="input" id="fJenisIzin">
+              <option value="">— Pilih jenis izin —</option>
+              <option>Sakit</option>
+              <option>Keperluan keluarga</option>
+              <option>Keperluan pribadi</option>
+              <option>Lainnya</option>
+            </select>
+            <small class="err" id="eJenisIzin"></small>
+          </div>
+          <div class="form-group" id="wrapKetIzin" hidden>
+            <label class="lbl" for="fKeteranganIzin">Keterangan</label>
+            <textarea class="input" id="fKeteranganIzin" rows="3" placeholder="cth: Ada acara keluarga"></textarea>
+          </div>
+        </div>
+
+        <!-- field khusus kejadian -->
+        <div id="fieldKejadian" hidden>
+          <div class="form-group">
+            <label class="lbl" for="fJudul">Judul kejadian *</label>
+            <input class="input" id="fJudul" placeholder="cth: Keributan di koridor" />
+            <small class="err" id="eJudul"></small>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl" for="fLokasi">Lokasi *</label>
+              <select class="input" id="fLokasi">
+                <option value="">— Pilih lokasi —</option>
+                <option>Kelas</option>
+                <option>Koridor</option>
+                <option>Lapangan</option>
+                <option>Kantin</option>
+                <option>Gerbang</option>
+                <option>Lainnya</option>
+              </select>
+              <small class="err" id="eLokasi"></small>
+            </div>
+            <div class="form-group">
+              <label class="lbl" for="fWaktuKejadian">Waktu *</label>
+              <input type="time" class="input" id="fWaktuKejadian" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl" for="fDeskripsi">Deskripsi kejadian *</label>
+            <textarea class="input" id="fDeskripsi" rows="3" placeholder="Ceritakan kejadiannya..."></textarea>
+            <small class="err" id="eDeskripsi"></small>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="lbl" for="fTindakan">Tindakan yang dilakukan</label>
+              <input class="input" id="fTindakan" placeholder="cth: Diberi teguran" />
+            </div>
+            <div class="form-group">
+              <label class="lbl" for="fStatusKejadian">Status</label>
+              <select class="input" id="fStatusKejadian">
+                <option>Ditangani</option>
+                <option>Dalam proses</option>
+                <option>Selesai</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="lbl" for="fTanggalKejadian">Tanggal *</label>
+            <input type="date" class="input" id="fTanggalKejadian" />
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-close>Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSimpan">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ MODAL DETAIL ============ -->
+  <div class="modal-overlay" id="detailModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head">
+        <h3>Detail Piket</h3>
+        <button class="icon-btn" data-close-detail aria-label="Tutup">✕</button>
+      </div>
+      <div class="detail-body" id="detailBody"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" data-close-detail>Tutup</button>
+        <button class="btn btn-primary" id="btnDetailEdit">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL HAPUS ============ -->
+  <div class="modal-overlay" id="deleteModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head"><h3>Hapus Data?</h3></div>
+      <p class="muted">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="delete-preview" id="deletePreview"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL PILIH JENIS (tambah umum) ============ -->
+  <div class="modal-overlay" id="chooseModal" hidden>
+    <div class="modal modal-sm">
+      <div class="modal-head"><h3>Tambah Data</h3><button class="icon-btn" id="chooseClose">✕</button></div>
+      <p class="muted">Pilih jenis data yang ingin dicatat:</p>
+      <div class="choose-grid">
+        <button class="quick-card" data-action="terlambat"><span class="q-ico q-orange">🕐</span><strong>Terlambat</strong></button>
+        <button class="quick-card" data-action="izin"><span class="q-ico q-green">📝</span><strong>Izin</strong></button>
+        <button class="quick-card" data-action="tidakhadir"><span class="q-ico q-red">🚫</span><strong>Tidak Hadir</strong></button>
+        <button class="quick-card" data-action="kejadian"><span class="q-ico q-blue">📋</span><strong>Kejadian</strong></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
